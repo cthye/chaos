@@ -1,0 +1,684 @@
+version: v1
+kind: plugin
+items:
+- target: cpu
+  shortDesc: Cpu experiment
+  longDesc: Cpu experiment, for example full load
+  example: blade create cpu load --cpu-percent 80
+  actions:
+  - action: fullload
+    aliases: [fl, load]
+    shortDesc: cpu load
+    longDesc: cpu load
+    flags:
+    - name: cpu-count
+      desc: Cpu count
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: cpu-list
+      desc: CPUs in which to allow burning (0-3 or 1,3)
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: cpu-percent
+      desc: percent of burn CPU (0-100)
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: timeout
+      desc: set timeout for experiment
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+  scope: host
+- target: mem
+  shortDesc: Mem experiment
+  longDesc: Mem experiment, for example load
+  example: mem load
+  actions:
+  - action: load
+    shortDesc: mem load
+    longDesc: mem load
+    flags:
+    - name: mem-percent
+      desc: percent of burn Memory (0-100)
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: reserve
+      desc: reserve to burn Memory, unit is MB. If the mem-percent flag exist, use
+        mem-percent first.
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: rate
+      desc: burn memory rate, unit is M/S, only support for ram mode.
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: mode
+      desc: burn memory mode, cache or ram.
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: timeout
+      desc: set timeout for experiment
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+  scope: host
+- target: process
+  shortDesc: Process experiment
+  longDesc: Process experiment, for example, kill process
+  example: blade create process kill --process tomcat
+  actions:
+  - action: kill
+    aliases: [k]
+    shortDesc: Kill process
+    longDesc: Kill process by process id or process name
+    matchers:
+    - name: process
+      desc: Process name
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: process-cmd
+      desc: Process name in command
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: count
+      desc: Limit count, 0 means unlimited
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: local-port
+      desc: 'Local service ports. Separate multiple ports with commas (,) or connector
+        representing ranges, for example: 80,8000-8080'
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: signal
+      desc: Killing process signal, such as 9,15
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: exclude-process
+      desc: Exclude process
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    flags:
+    - name: timeout
+      desc: set timeout for experiment
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+  - action: stop
+    aliases: [f]
+    shortDesc: process fake death
+    longDesc: process fake death by process id or process name
+    matchers:
+    - name: process
+      desc: Process name
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: process-cmd
+      desc: Process name in command
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    flags:
+    - name: timeout
+      desc: set timeout for experiment
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+  scope: host
+- target: network
+  shortDesc: Network experiment
+  longDesc: Network experiment
+  example: |-
+    network delay --interface eth0 --time 3000
+
+    # You can execute "blade query network interface" command to query the interfaces
+  actions:
+  - action: delay
+    shortDesc: Delay experiment
+    longDesc: Delay experiment
+    matchers:
+    - name: local-port
+      desc: 'Ports for local service. Support for configuring multiple ports, separated
+        by commas or connector representing ranges, for example: 80,8000-8080'
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: remote-port
+      desc: 'Ports for remote service. Support for configuring multiple ports, separated
+        by commas or connector representing ranges, for example: 80,8000-8080'
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: exclude-port
+      desc: 'Exclude local ports. Support for configuring multiple ports, separated
+        by commas or connector representing ranges, for example: 22,8000. This flag
+        is invalid when --local-port or --remote-port is specified'
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: destination-ip
+      desc: destination ip. Support for using mask to specify the ip range such as
+        92.168.1.0/24 or comma separated multiple ips, for example 10.0.0.1,11.0.0.1.
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: ignore-peer-port
+      desc: ignore excluding all ports communicating with this port, generally used
+        when the ss command does not exist
+      noArgs: true
+      required: false
+      requiredWhenDestroyed: false
+    - name: interface
+      desc: Network interface, for example, eth0
+      noArgs: false
+      required: true
+      requiredWhenDestroyed: true
+    - name: exclude-ip
+      desc: Exclude ips. Support for using mask to specify the ip range such as 92.168.1.0/24
+        or comma separated multiple ips, for example 10.0.0.1,11.0.0.1
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: force
+      desc: Forcibly overwrites the original rules
+      noArgs: true
+      required: false
+      requiredWhenDestroyed: false
+    flags:
+    - name: time
+      desc: Delay time, ms
+      noArgs: false
+      required: true
+      requiredWhenDestroyed: false
+    - name: offset
+      desc: Delay offset time, ms
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: timeout
+      desc: set timeout for experiment
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+  - action: drop
+    shortDesc: Drop experiment
+    longDesc: Drop network data
+    matchers:
+    - name: local-port
+      desc: Port for local service
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: remote-port
+      desc: Port for remote service
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    flags:
+    - name: timeout
+      desc: set timeout for experiment
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+  - action: dns
+    shortDesc: Dns experiment
+    longDesc: Dns experiment
+    flags:
+    - name: domain
+      desc: Domain name
+      noArgs: false
+      required: true
+      requiredWhenDestroyed: true
+    - name: ip
+      desc: Domain ip
+      noArgs: false
+      required: true
+      requiredWhenDestroyed: true
+    - name: timeout
+      desc: set timeout for experiment
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+  - action: loss
+    shortDesc: Loss network package
+    longDesc: Loss network package
+    matchers:
+    - name: local-port
+      desc: 'Ports for local service. Support for configuring multiple ports, separated
+        by commas or connector representing ranges, for example: 80,8000-8080'
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: remote-port
+      desc: 'Ports for remote service. Support for configuring multiple ports, separated
+        by commas or connector representing ranges, for example: 80,8000-8080'
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: exclude-port
+      desc: 'Exclude local ports. Support for configuring multiple ports, separated
+        by commas or connector representing ranges, for example: 22,8000. This flag
+        is invalid when --local-port or --remote-port is specified'
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: destination-ip
+      desc: destination ip. Support for using mask to specify the ip range such as
+        92.168.1.0/24 or comma separated multiple ips, for example 10.0.0.1,11.0.0.1.
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: ignore-peer-port
+      desc: ignore excluding all ports communicating with this port, generally used
+        when the ss command does not exist
+      noArgs: true
+      required: false
+      requiredWhenDestroyed: false
+    - name: interface
+      desc: Network interface, for example, eth0
+      noArgs: false
+      required: true
+      requiredWhenDestroyed: true
+    - name: exclude-ip
+      desc: Exclude ips. Support for using mask to specify the ip range such as 92.168.1.0/24
+        or comma separated multiple ips, for example 10.0.0.1,11.0.0.1
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: force
+      desc: Forcibly overwrites the original rules
+      noArgs: true
+      required: false
+      requiredWhenDestroyed: false
+    flags:
+    - name: percent
+      desc: loss percent, [0, 100]
+      noArgs: false
+      required: true
+      requiredWhenDestroyed: false
+    - name: timeout
+      desc: set timeout for experiment
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+  - action: duplicate
+    shortDesc: Duplicate experiment
+    longDesc: Duplicate experiment
+    matchers:
+    - name: local-port
+      desc: 'Ports for local service. Support for configuring multiple ports, separated
+        by commas or connector representing ranges, for example: 80,8000-8080'
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: remote-port
+      desc: 'Ports for remote service. Support for configuring multiple ports, separated
+        by commas or connector representing ranges, for example: 80,8000-8080'
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: exclude-port
+      desc: 'Exclude local ports. Support for configuring multiple ports, separated
+        by commas or connector representing ranges, for example: 22,8000. This flag
+        is invalid when --local-port or --remote-port is specified'
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: destination-ip
+      desc: destination ip. Support for using mask to specify the ip range such as
+        92.168.1.0/24 or comma separated multiple ips, for example 10.0.0.1,11.0.0.1.
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: ignore-peer-port
+      desc: ignore excluding all ports communicating with this port, generally used
+        when the ss command does not exist
+      noArgs: true
+      required: false
+      requiredWhenDestroyed: false
+    - name: interface
+      desc: Network interface, for example, eth0
+      noArgs: false
+      required: true
+      requiredWhenDestroyed: true
+    - name: exclude-ip
+      desc: Exclude ips. Support for using mask to specify the ip range such as 92.168.1.0/24
+        or comma separated multiple ips, for example 10.0.0.1,11.0.0.1
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: force
+      desc: Forcibly overwrites the original rules
+      noArgs: true
+      required: false
+      requiredWhenDestroyed: false
+    flags:
+    - name: percent
+      desc: Duplication percent, must be positive integer without %, for example,
+        --percent 50
+      noArgs: false
+      required: true
+      requiredWhenDestroyed: false
+    - name: timeout
+      desc: set timeout for experiment
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+  - action: corrupt
+    shortDesc: Corrupt experiment
+    longDesc: Corrupt experiment
+    matchers:
+    - name: local-port
+      desc: 'Ports for local service. Support for configuring multiple ports, separated
+        by commas or connector representing ranges, for example: 80,8000-8080'
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: remote-port
+      desc: 'Ports for remote service. Support for configuring multiple ports, separated
+        by commas or connector representing ranges, for example: 80,8000-8080'
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: exclude-port
+      desc: 'Exclude local ports. Support for configuring multiple ports, separated
+        by commas or connector representing ranges, for example: 22,8000. This flag
+        is invalid when --local-port or --remote-port is specified'
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: destination-ip
+      desc: destination ip. Support for using mask to specify the ip range such as
+        92.168.1.0/24 or comma separated multiple ips, for example 10.0.0.1,11.0.0.1.
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: ignore-peer-port
+      desc: ignore excluding all ports communicating with this port, generally used
+        when the ss command does not exist
+      noArgs: true
+      required: false
+      requiredWhenDestroyed: false
+    - name: interface
+      desc: Network interface, for example, eth0
+      noArgs: false
+      required: true
+      requiredWhenDestroyed: true
+    - name: exclude-ip
+      desc: Exclude ips. Support for using mask to specify the ip range such as 92.168.1.0/24
+        or comma separated multiple ips, for example 10.0.0.1,11.0.0.1
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: force
+      desc: Forcibly overwrites the original rules
+      noArgs: true
+      required: false
+      requiredWhenDestroyed: false
+    flags:
+    - name: percent
+      desc: Corruption percent, must be positive integer without %, for example, --percent
+        50
+      noArgs: false
+      required: true
+      requiredWhenDestroyed: false
+    - name: timeout
+      desc: set timeout for experiment
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+  - action: reorder
+    shortDesc: Reorder experiment
+    longDesc: Reorder experiment
+    matchers:
+    - name: local-port
+      desc: 'Ports for local service. Support for configuring multiple ports, separated
+        by commas or connector representing ranges, for example: 80,8000-8080'
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: remote-port
+      desc: 'Ports for remote service. Support for configuring multiple ports, separated
+        by commas or connector representing ranges, for example: 80,8000-8080'
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: exclude-port
+      desc: 'Exclude local ports. Support for configuring multiple ports, separated
+        by commas or connector representing ranges, for example: 22,8000. This flag
+        is invalid when --local-port or --remote-port is specified'
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: destination-ip
+      desc: destination ip. Support for using mask to specify the ip range such as
+        92.168.1.0/24 or comma separated multiple ips, for example 10.0.0.1,11.0.0.1.
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: ignore-peer-port
+      desc: ignore excluding all ports communicating with this port, generally used
+        when the ss command does not exist
+      noArgs: true
+      required: false
+      requiredWhenDestroyed: false
+    - name: interface
+      desc: Network interface, for example, eth0
+      noArgs: false
+      required: true
+      requiredWhenDestroyed: true
+    - name: exclude-ip
+      desc: Exclude ips. Support for using mask to specify the ip range such as 92.168.1.0/24
+        or comma separated multiple ips, for example 10.0.0.1,11.0.0.1
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: force
+      desc: Forcibly overwrites the original rules
+      noArgs: true
+      required: false
+      requiredWhenDestroyed: false
+    flags:
+    - name: percent
+      desc: Packets are sent immediately percentage, must be positive integer without
+        %, for example, --percent 50
+      noArgs: false
+      required: true
+      requiredWhenDestroyed: false
+    - name: correlation
+      desc: Correlation on previous packet, value is between 0 and 100
+      noArgs: false
+      required: true
+      requiredWhenDestroyed: false
+    - name: gap
+      desc: Packet gap, must be positive integer
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: time
+      desc: Delay time, must be positive integer, unit is millisecond, default value
+        is 10
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: timeout
+      desc: set timeout for experiment
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+  - action: occupy
+    shortDesc: Occupy the specify port
+    longDesc: Occupy the specify port, if the port is used, it will return fail, except
+      add --force flag
+    matchers:
+    - name: port
+      desc: The port occupied
+      noArgs: false
+      required: true
+      requiredWhenDestroyed: false
+    - name: force
+      desc: Force kill the process which is using the port
+      noArgs: true
+      required: false
+      requiredWhenDestroyed: false
+    flags:
+    - name: timeout
+      desc: set timeout for experiment
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+  scope: host
+- target: disk
+  shortDesc: Disk experiment
+  longDesc: Disk experiment contains fill disk or burn io
+  example: blade create disk fill --path /home --size 1000
+  actions:
+  - action: fill
+    shortDesc: Fill the specified directory path
+    longDesc: Fill the specified directory path. If the path is not directory or does
+      not exist, an error message will be returned.
+    matchers:
+    - name: path
+      desc: The path of directory where the disk is populated, default value is /
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    flags:
+    - name: size
+      desc: Disk fill size, unit is MB. The value is a positive integer without unit,
+        for example, --size 1024
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: percent
+      desc: Total percentage of disk occupied by the specified path. If size and the
+        flag exist, use this flag first. The value must be positive integer without
+        %
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: reserve
+      desc: 'Disk reserve size, unit is MB. The value is a positive integer without
+        unit. If size, percent and reserve flags exist, the priority is as follows:
+        percent > reserve > size'
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: retain-handle
+      desc: Whether to retain the big file handle, default value is false.
+      noArgs: true
+      required: false
+      requiredWhenDestroyed: false
+    - name: timeout
+      desc: set timeout for experiment
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+  - action: burn
+    shortDesc: Increase disk read and write io load
+    longDesc: Increase disk read and write io load
+    matchers:
+    - name: read
+      desc: Burn io by read, it will create a 600M for reading and delete it when
+        destroy it
+      noArgs: true
+      required: false
+      requiredWhenDestroyed: false
+    - name: write
+      desc: Burn io by write, it will create a file by value of the size flag, for
+        example the size default value is 10, then it will create a 10M*100=1000M
+        file for writing, and delete it when destroy
+      noArgs: true
+      required: false
+      requiredWhenDestroyed: false
+    flags:
+    - name: size
+      desc: Block size, MB, default is 10
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: path
+      desc: The path of directory where the disk is burning, default value is /
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: timeout
+      desc: set timeout for experiment
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+  scope: host
+- target: script
+  shortDesc: Script chaos experiment
+  longDesc: Script chaos experiment
+  example: |-
+    blade create script delay --time 2000 --file xxx.sh --function-name start
+
+    blade create script exit --file xxx.sh --function-name offline --exit-message "error" --exit-code 2
+  actions:
+  - action: delay
+    shortDesc: Script executed delay
+    longDesc: Sleep in script
+    flags:
+    - name: time
+      desc: sleep time, unit is millisecond
+      noArgs: false
+      required: true
+      requiredWhenDestroyed: false
+    - name: file
+      desc: Script file full path
+      noArgs: false
+      required: true
+      requiredWhenDestroyed: true
+    - name: function-name
+      desc: function name in shell
+      noArgs: false
+      required: true
+      requiredWhenDestroyed: false
+    - name: timeout
+      desc: set timeout for experiment
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+  - action: exit
+    shortDesc: Exit script
+    longDesc: Exit script with specify message and code
+    flags:
+    - name: exit-code
+      desc: Exit code
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: exit-message
+      desc: Exit message
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+    - name: file
+      desc: Script file full path
+      noArgs: false
+      required: true
+      requiredWhenDestroyed: true
+    - name: function-name
+      desc: function name in shell
+      noArgs: false
+      required: true
+      requiredWhenDestroyed: false
+    - name: timeout
+      desc: set timeout for experiment
+      noArgs: false
+      required: false
+      requiredWhenDestroyed: false
+  scope: host
